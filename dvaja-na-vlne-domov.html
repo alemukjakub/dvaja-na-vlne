@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dvaja na vlne — cestovateľský denník</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4FAFC;--surface:#FFFFFF;--primary:#1391CE;--deep:#0B4D74;
+    --aqua:#7FD0E8;--aqua-tint:#EAF6FB;--sun:#F4B740;--sun-ink:#8a5e00;
+    --ink:#21414F;--muted:#5f7d8a;--line:rgba(11,77,116,.15);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Figtree',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sun-ink)}
+  .eyebrow.blue{color:var(--primary)}
+
+  /* ---------- NAV ---------- */
+  .site-header{position:sticky;top:0;z-index:40;background:rgba(244,250,252,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .logo{display:flex;align-items:center;gap:9px;font-family:'Fraunces';font-weight:600;font-size:21px;color:var(--deep);letter-spacing:.01em}
+  .logo svg{display:block}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:15px;color:var(--muted);transition:color .2s}
+  .nav-links a:hover{color:var(--deep)}
+  .nav-cta{background:var(--primary);color:#fff!important;padding:9px 18px;font-weight:600;font-size:14px}
+  .nav-cta:hover{background:var(--deep)}
+  .burger{display:none;background:none;border:0;cursor:pointer;color:var(--deep)}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+  /* ---------- HERO ---------- */
+  .hero{background:linear-gradient(180deg,var(--aqua-tint),var(--bg));padding:76px 0 66px;text-align:center}
+  .hero .eyebrow{margin-bottom:20px;display:inline-block}
+  .hero h1{font-family:'Fraunces';font-weight:500;font-size:clamp(40px,6.4vw,74px);line-height:1;letter-spacing:-.02em;color:var(--deep);max-width:16ch;margin:0 auto}
+  .wave{margin:18px auto 22px;display:block}
+  .hero p{max-width:52ch;margin:0 auto;font-size:19px;color:var(--muted)}
+
+  /* ---------- SECTION SHELL ---------- */
+  .section{padding:66px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:32px}
+  .sec-head h2{font-family:'Fraunces';font-weight:500;font-size:clamp(24px,3.2vw,32px);color:var(--deep);white-space:nowrap}
+  .sec-head .rule{flex:1;height:1px;background:var(--line)}
+  .sec-head .more{font-size:14px;color:var(--primary);white-space:nowrap}
+  .sec-head .more:hover{color:var(--sun-ink)}
+
+  /* ---------- FEATURED ---------- */
+  .featured{display:grid;grid-template-columns:1.1fr .9fr;background:var(--surface);border:1px solid var(--line)}
+  .feat-img{position:relative;min-height:380px;background:linear-gradient(155deg,#3FA9DB,#0B4D74)}
+  .feat-img .cat{position:absolute;top:18px;left:18px;background:var(--sun);color:#3d2c00;font-weight:600;font-size:12px;padding:6px 12px;letter-spacing:.03em}
+  .feat-body{padding:42px 44px;display:flex;flex-direction:column;justify-content:center}
+  .feat-body .eyebrow{margin-bottom:14px}
+  .feat-body h3{font-family:'Fraunces';font-weight:500;font-size:clamp(28px,3.4vw,40px);line-height:1.05;letter-spacing:-.01em;color:var(--deep);margin-bottom:14px}
+  .feat-body p{color:var(--muted);max-width:46ch}
+  .feat-meta{margin-top:22px;font-size:14px;color:var(--muted);display:flex;gap:12px;align-items:center}
+  .feat-meta .dot{width:4px;height:4px;background:var(--aqua)}
+
+  /* ---------- GRID ---------- */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .card{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+  .card:hover{border-color:var(--primary);transform:translateY(-4px)}
+  .card-img{height:172px}
+  .g1{background:linear-gradient(150deg,#3FA9DB,#0B4D74)}
+  .g2{background:linear-gradient(150deg,#7FD0E8,#1391CE)}
+  .g3{background:linear-gradient(150deg,#1391CE,#0B3A5C)}
+  .g4{background:linear-gradient(150deg,#5FB8DE,#0B4D74)}
+  .g5{background:linear-gradient(150deg,#9BD9EC,#2E9BD6)}
+  .g6{background:linear-gradient(150deg,#2E9BD6,#0B3A5C)}
+  .card-body{padding:20px 21px 24px;flex:1;display:flex;flex-direction:column}
+  .card-body .place{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);margin-bottom:9px}
+  .card-body h4{font-family:'Fraunces';font-weight:500;font-size:21px;line-height:1.15;color:var(--deep);margin-bottom:9px}
+  .card-body p{color:var(--muted);font-size:15px;flex:1}
+  .card-date{margin-top:16px;font-size:13px;color:var(--muted)}
+
+  /* ---------- SUBSCRIBE ---------- */
+  .subscribe{background:var(--aqua-tint);border:1px solid var(--line)}
+  .sub-inner{padding:54px 48px;max-width:620px}
+  .subscribe .eyebrow{margin-bottom:14px;display:inline-block}
+  .subscribe h2{font-family:'Fraunces';font-weight:500;font-size:clamp(28px,3.6vw,40px);line-height:1.06;color:var(--deep);margin-bottom:12px}
+  .subscribe p{color:var(--muted);margin-bottom:26px}
+  .sub-form{display:flex;gap:12px;flex-wrap:wrap}
+  .sub-form input{flex:1;min-width:220px;padding:14px 16px;border:1px solid var(--line);background:#fff;color:var(--ink);font-family:inherit;font-size:15px}
+  .sub-form button{background:var(--sun);color:#3d2c00;border:0;padding:14px 24px;font-family:inherit;font-weight:600;font-size:15px;cursor:pointer;transition:background .2s}
+  .sub-form button:hover{background:#e5a92b}
+
+  /* ---------- FOOTER ---------- */
+  .site-footer{border-top:1px solid var(--line);margin-top:14px;padding:44px 0 40px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot .muted{color:var(--muted);font-size:14px}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:860px){
+    .nav-links{display:none}.burger{display:block}
+    .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(244,250,252,.98);border-bottom:1px solid var(--line);padding:18px 28px;gap:16px;align-items:flex-start;box-shadow:0 14px 26px -18px rgba(11,77,116,.55)}
+    .featured{grid-template-columns:1fr}
+    .feat-img{min-height:220px}
+    .feat-body{padding:32px 28px}
+    .grid{grid-template-columns:1fr 1fr;gap:22px}
+    .sub-inner{padding:42px 28px}
+  }
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr}
+    .wrap{padding:0 20px}
+    .hero{padding:56px 0 48px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .reveal{transition:none;opacity:1;transform:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="logo" href="dvaja-na-vlne-domov.html">
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
+        <path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6" fill="none"/>
+        <circle cx="19" cy="3.5" r="2" fill="#F4B740"/>
+      </svg>
+      Dvaja na vlne
+    </a>
+    <nav class="nav-links">
+      <a href="#denník">Príbehy</a>
+      <a href="dvaja-na-vlne-mapa.html">Mapa</a>
+      <a href="dvaja-na-vlne-o-nas.html">O nás</a>
+      <a href="#odber" class="nav-cta">Odoberať</a>
+    </nav>
+    <button class="burger" aria-label="Menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Cestovateľský denník</span>
+    <h1>Dvaja na vlne</h1>
+    <!-- jemný morský detail: jedna vlnka -->
+    <svg class="wave" width="322" height="92" viewBox="0 0 260 74" fill="none" aria-hidden="true">
+      <path d="M0 61 Q30 54 60 61 T120 61 T180 61 T240 61 T300 61" stroke="#7FD0E8" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+      <path d="M96 52 Q125 63 154 52 Z" fill="#0B4D74"/>
+      <line x1="125" y1="20" x2="125" y2="52" stroke="#0B4D74" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M123 23 L123 50 L103 50 Z" fill="#EAF6FB" stroke="#0B4D74" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M127 26 L127 50 L145 50 Z" fill="#F4B740"/>
+      <path d="M125 20 l9 3 l-9 3 z" fill="#2E9BD6"/>
+      <path d="M2 54 Q34 46 66 54 T130 54 T194 54 T258 54" stroke="#1391CE" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <circle cx="232" cy="16" r="6" fill="#F4B740"/>
+    </svg>
+    <p>Zápisky z miest, kde sa pevnina končí a začína voda. More, pobrežia a modrá hodina — poctivo a bez ponáhľania.</p>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section" id="denník" style="padding-top:52px">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Najnovšia zastávka</h2>
+      <span class="rule"></span>
+      <a class="more" href="#z-dennika">Všetky príbehy →</a>
+    </div>
+
+    <article class="featured reveal" id="featured-article">
+      <div class="feat-img"><span class="cat">Kampánia · Taliansko</span></div>
+      <div class="feat-body">
+        <span class="eyebrow">Príbeh týždňa</span>
+        <h3>Amalfi za úsvitu, keď ešte spia turisti aj mesto</h3>
+        <p>Vstali sme o pol piatej, aby sme videli, ako sa slnko obtáča okolo útesov. Malý sprievodca po serpentínach, kávach a schodoch, ktoré nikde nekončia.</p>
+        <div class="feat-meta"><span>28. jún 2026</span><span class="dot"></span><span>9 min čítania</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- GRID -->
+<section class="section" id="z-dennika" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Z denníka</h2>
+      <span class="rule"></span>
+      <a class="more" href="#z-dennika">Archív →</a>
+    </div>
+
+    <div class="grid">
+      <article class="card reveal">
+        <div class="card-img g1"></div>
+        <div class="card-body"><span class="place">Santorini · Grécko</span><h4>Modré kupoly a kde ich fotiť bez davov</h4><p>Tri miesta, kam sa dostaneš pešo skôr ako výletné lode.</p><span class="card-date">21. jún 2026</span></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img g2"></div>
+        <div class="card-body"><span class="place">Algarve · Portugalsko</span><h4>Skryté pláže pod útesmi Lagosu</h4><p>Kajakom do jaskýň Benagil a späť pred prílivom.</p><span class="card-date">12. jún 2026</span></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img g3"></div>
+        <div class="card-body"><span class="place">Lofoty · Nórsko</span><h4>More, ktoré nikdy nezotmie</h4><p>Polnočné slnko nad rybárskymi domčekmi v Reine.</p><span class="card-date">3. jún 2026</span></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img g4"></div>
+        <div class="card-body"><span class="place">Dubrovník · Chorvátsko</span><h4>Po hradbách o šiestej ráno</h4><p>Ako obísť vstupenkové rady a mať mesto pre seba.</p><span class="card-date">25. máj 2026</span></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img g5"></div>
+        <div class="card-body"><span class="place">Madeira · Portugalsko</span><h4>Levady, oceán a mračná pod nohami</h4><p>Túra, kde sa Atlantik díva na teba zhora aj zdola.</p><span class="card-date">14. máj 2026</span></div>
+      </article>
+      <article class="card reveal">
+        <div class="card-img g6"></div>
+        <div class="card-body"><span class="place">Mallorca · Španielsko</span><h4>Zátoky na severe, ktoré nikto neobjavil</h4><p>Autom po serpentínach k tyrkysovým calas.</p><span class="card-date">2. máj 2026</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SUBSCRIBE -->
+<section class="section" id="odber" style="padding-top:0">
+  <div class="wrap">
+    <div class="subscribe reveal">
+      <div class="sub-inner">
+        <span class="eyebrow">Raz za mesiac · žiadny spam</span>
+        <h2>Pošli si more do schránky</h2>
+        <p>Nové príbehy, mapy a tipy z ciest. Vždy prvého v mesiaci, keď je príliv najvyšší.</p>
+        <div class="sub-form">
+          <input type="email" placeholder="tvoj@email.sk" aria-label="E-mailová adresa">
+          <button type="button">Prihlásiť sa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <a class="logo" href="dvaja-na-vlne-domov.html">
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
+        <path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6" fill="none"/>
+        <circle cx="19" cy="3.5" r="2" fill="#F4B740"/>
+      </svg>
+      Dvaja na vlne
+    </a>
+    <span class="muted">© 2026 · cestovateľský denník · stále niekde pri mori</span>
+  </div>
+</footer>
+
+<script src="dvaja-supabase.js"></script>
+<script src="dvaja-nav.js"></script>
+<script>
+(function(){
+  // ---- odhalenie pri scrollovaní ----
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.12});
+  function observe(){ document.querySelectorAll('.reveal:not(.in)').forEach(function(el){ io.observe(el); }); }
+
+  // ---- navigácia na článok (podľa slugu, so spätnou kompatibilitou) ----
+  function artUrl(slug,title,place,i){
+    if(slug && slug!=='undefined' && slug!=='null') return 'dvaja-na-vlne-clanok.html?slug='+encodeURIComponent(slug);
+    return 'dvaja-na-vlne-clanok.html?t='+encodeURIComponent(title||'')+'&p='+encodeURIComponent(place||'')+'&c='+((i||0)%6);
+  }
+  function wire(){
+    var els=document.querySelectorAll('.card,.featured');
+    els.forEach(function(el,i){
+      if(el._wired) return; el._wired=true; el.style.cursor='pointer';
+      el.setAttribute('tabindex','0'); el.setAttribute('role','link');
+      var go=function(){
+        var slug=el.getAttribute('data-slug');
+        var t=(el.querySelector('h4,h3')||{}).textContent||'';
+        var p=(el.querySelector('.place,.cat')||{}).textContent||'';
+        location.href=artUrl(slug,t,p,i);
+      };
+      el.addEventListener('click',go);
+      el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } });
+    });
+  }
+
+  // ---- render z Supabase dát ----
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function featuredHTML(a){
+    return '<div class="feat-img" style="background:'+window.bgCss(a)+'"><span class="cat">'+esc(a.place)+'</span></div>'+
+      '<div class="feat-body"><span class="eyebrow">Príbeh týždňa</span>'+
+      '<h3>'+esc(a.title)+'</h3><p>'+esc(a.excerpt||a.intro||'')+'</p>'+
+      '<div class="feat-meta"><span>'+esc(fmtDate(a.published_at))+'</span><span class="dot"></span><span>'+readingMin(a)+' min čítania</span></div></div>';
+  }
+  function cardHTML(a){
+    return '<article class="card reveal" data-slug="'+esc(a.slug)+'">'+
+      '<div class="card-img" style="background:'+window.bgCss(a)+'"></div>'+
+      '<div class="card-body"><span class="place">'+esc(a.place)+'</span><h4>'+esc(a.title)+'</h4>'+
+      '<p>'+esc(a.excerpt||'')+'</p><span class="card-date">'+esc(fmtDate(a.published_at))+'</span></div></article>';
+  }
+  function renderData(list){
+    var pub=list.filter(function(a){ return a.category!=='planned'; });
+    if(!pub.length) return;
+    var fi=0; for(var k=0;k<pub.length;k++){ if(pub[k].featured){ fi=k; break; } }
+    var feat=pub[fi], fenode=document.getElementById('featured-article');
+    if(fenode){ fenode.setAttribute('data-slug',feat.slug||''); fenode.innerHTML=featuredHTML(feat); fenode._wired=false; }
+    var rest=pub.filter(function(_,idx){ return idx!==fi; });
+    var grid=document.querySelector('.grid');
+    if(grid){ grid.innerHTML=rest.map(cardHTML).join(''); }
+    // označ nové prvky ako zjavené (žiadny opätovný flicker) a napoj kliky
+    document.querySelectorAll('.grid .card, #featured-article').forEach(function(el){ el.classList.add('in'); });
+    wire();
+  }
+
+  // ---- init: vstavaný obsah funguje hneď, dáta ho prekryjú ak sú ----
+  wire(); observe();
+  if(window.SB && SB.ready()){
+    SB.list().then(renderData).catch(function(e){ console.warn('Dvaja: Supabase načítanie zlyhalo, ponechávam vstavaný obsah.', e); });
+  }
+})();
+</script>
+</body>
+</html>

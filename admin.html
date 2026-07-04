@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Dvaja na vlne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F4FAFC;--surface:#FFFFFF;--primary:#1391CE;--deep:#0B4D74;--aqua:#7FD0E8;--aqua-tint:#EAF6FB;--sun:#F4B740;--sun-ink:#8a5e00;--ink:#21414F;--muted:#5f7d8a;--line:rgba(11,77,116,.15);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Figtree',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--primary);text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  header.top{position:sticky;top:0;z-index:20;background:rgba(244,250,252,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:9px;font-family:'Fraunces';font-weight:600;font-size:19px;color:var(--deep)}
+  .brand .tag{font-family:'Figtree';font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--primary);padding:3px 8px}
+  .top-actions{display:flex;gap:14px;align-items:center;font-size:14px}
+
+  h1{font-family:'Fraunces';font-weight:500;font-size:28px;color:var(--deep);margin:28px 0 4px}
+  .sub{color:var(--muted);margin-bottom:22px}
+
+  .warn{background:#FBEFD2;border:1px solid #e7c877;color:#6b4e00;padding:14px 16px;margin:16px 0}
+  .warn code{background:#fff;padding:1px 6px;border:1px solid var(--line);font-size:13px}
+
+  .cols{display:grid;grid-template-columns:1fr 460px;gap:26px;align-items:start;padding-bottom:40px}
+  .panel{background:var(--surface);border:1px solid var(--line);padding:22px 22px 24px}
+  .panel h2{font-family:'Fraunces';font-weight:500;font-size:19px;color:var(--deep);margin-bottom:16px;display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .mini{font-family:'Figtree';font-size:12px;font-weight:600;color:var(--muted)}
+
+  label{display:block;font-weight:600;font-size:13px;color:var(--deep);margin:14px 0 5px}
+  label .opt{font-weight:400;color:var(--muted)}
+  input[type=text],input[type=date],input[type=number],textarea,select{
+    width:100%;padding:10px 12px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    font-family:inherit;font-size:14px;border-radius:0}
+  textarea{resize:vertical;min-height:70px;line-height:1.6}
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--primary);outline-offset:1px}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .check{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:var(--ink);cursor:pointer}
+  .check input{width:16px;height:16px;accent-color:var(--primary)}
+
+  .swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .sw{width:52px;height:34px;border:2px solid transparent;cursor:pointer;outline:1px solid var(--line)}
+  .sw.active{border-color:var(--deep)}
+  .imgrow,.locrow{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
+  .locrow input{flex:1;min-width:180px}
+  .img-thumb{margin-top:10px;height:130px;background-size:cover;background-position:center;border:1px solid var(--line)}
+  .daterow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px}
+  .date-quick{display:flex;gap:6px}
+  .chip{font-family:inherit;font-size:13px;background:var(--bg);border:1px solid var(--line);color:var(--deep);padding:9px 13px;cursor:pointer;transition:all .15s}
+  .chip:hover{border-color:var(--primary)}
+  .chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  #f-date{max-width:190px}
+  .date-preview{color:var(--primary);font-weight:600;font-size:13px}
+
+  .btns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+  .btn{background:var(--primary);color:#fff;border:0;padding:11px 20px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
+  .btn:hover{background:var(--deep)}
+  .btn.sec{background:#fff;color:var(--deep);border:1px solid var(--line)}
+  .btn.sec:hover{background:var(--aqua-tint)}
+  .btn.danger{background:#fff;color:#b42318;border:1px solid #e6b0aa}
+  .btn.danger:hover{background:#fdeceb}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  #status{margin-top:14px;font-size:14px;min-height:20px}
+  #status.ok{color:#1a7a3c}#status.err{color:#b42318}
+
+  /* map picker */
+  .pickwrap{position:relative;border:1px solid var(--line);background:var(--aqua-tint)}
+  #pick{width:100%;height:auto;display:block;cursor:crosshair}
+  #pick .ocean{fill:var(--aqua-tint)}
+  #pick .grat{fill:none;stroke:var(--aqua);stroke-width:.6;opacity:.45}
+  #pick .land path{fill:#fff;stroke:rgba(11,77,116,.22);stroke-width:.5;vector-effect:non-scaling-stroke}
+  .coord{font-size:12px;color:var(--muted);margin-top:6px}
+
+  /* preview */
+  .pv-card{border:1px solid var(--line);max-width:300px}
+  .pv-img{height:150px;background:linear-gradient(150deg,#3FA9DB,#0B4D74)}
+  .pv-body{padding:16px 16px 18px}
+  .pv-place{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);margin-bottom:8px}
+  .pv-body h4{font-family:'Fraunces';font-weight:500;font-size:19px;line-height:1.15;color:var(--deep);margin-bottom:8px}
+  .pv-body p{color:var(--muted);font-size:14px}
+  .pv-date{margin-top:14px;font-size:12px;color:var(--muted)}
+
+  /* list */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px}
+  .pill.favorite{background:#FBEFD2;color:#8a5e00}
+  .pill.article{background:#E3F1FB;color:#0B4D74}
+  .pill.planned{background:#EAF6FB;color:#0B4D74}
+  .tbtn{font-size:13px;background:none;border:0;cursor:pointer;padding:4px 6px;font-family:inherit;font-weight:600}
+  .tbtn.edit{color:var(--primary)}.tbtn.del{color:#b42318}
+  .star{color:var(--sun)}
+
+  /* login */
+  #gate{position:fixed;inset:0;z-index:60;background:linear-gradient(180deg,var(--aqua-tint),var(--bg));display:flex;align-items:center;justify-content:center;padding:20px}
+  .gatebox{background:#fff;border:1px solid var(--line);padding:34px 32px;max-width:380px;width:100%;text-align:center}
+  .gatebox .brand{justify-content:center;margin-bottom:8px}
+  .gatebox p{color:var(--muted);font-size:14px;margin-bottom:18px}
+  .gatebox input{text-align:center;margin-bottom:12px}
+  .hidden{display:none!important}
+  @media(max-width:900px){.cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ------- LOGIN ------- -->
+<div id="gate">
+  <form class="gatebox" id="gate-form">
+    <div class="brand">
+      <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true"><path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6"/><circle cx="19" cy="3.5" r="2" fill="#F4B740"/></svg>
+      Dvaja na vlne
+    </div>
+    <p>Prihlásenie do administrácie</p>
+    <input type="email" id="gate-email" placeholder="E-mail" autocomplete="username" style="margin-bottom:10px">
+    <input type="password" id="gate-key" placeholder="Heslo" autocomplete="current-password">
+    <button class="btn" type="submit" style="width:100%">Vstúpiť</button>
+    <div id="gate-err" style="color:#b42318;font-size:13px;margin-top:10px"></div>
+  </form>
+</div>
+
+<!-- ------- APP ------- -->
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true"><path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6"/><circle cx="19" cy="3.5" r="2" fill="#F4B740"/></svg>
+        Dvaja na vlne <span class="tag">admin</span>
+      </div>
+      <div class="top-actions">
+        <a href="dvaja-na-vlne-domov.html" target="_blank">Otvoriť web ↗</a>
+        <a href="#" id="logout">Odhlásiť</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <h1 id="form-title">Nový článok</h1>
+    <p class="sub">Vyplň polia, umiestni pin na mape a ulož. Dátum sa dopĺňa automaticky (dá sa prepísať).</p>
+
+    <div id="setup" class="warn hidden">
+      Backend zatiaľ nie je nastavený. Doplň <code>SB_URL</code> a <code>SB_KEY</code> v súbore <code>dvaja-supabase.js</code>. Dovtedy sa nedá ukladať ani načítať zoznam.
+    </div>
+
+    <div class="cols">
+      <!-- FORM -->
+      <div class="panel">
+        <h2>Obsah článku <span class="mini" id="edit-badge"></span></h2>
+
+        <label>Nadpis</label>
+        <input type="text" id="f-title" placeholder="Napr. Amalfi za úsvitu">
+
+        <div class="row2">
+          <div>
+            <label>Miesto</label>
+            <input type="text" id="f-place" placeholder="Napr. Amalfi · Taliansko">
+            <div class="hint">Zobrazí sa na karte, na mape aj v článku.</div>
+          </div>
+          <div>
+            <label>Slug <span class="opt">(v URL)</span></label>
+            <input type="text" id="f-slug" placeholder="amalfi">
+            <div class="hint">Dopĺňa sa z nadpisu, dá sa upraviť.</div>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label>Kategória (pin)</label>
+            <select id="f-category">
+              <option value="article">📍 Máme článok</option>
+              <option value="favorite">★ Obľúbené</option>
+              <option value="planned">○ Chystáme sa</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <label class="check" style="margin-top:0"><input type="checkbox" id="f-featured"> Príbeh týždňa</label>
+          </div>
+        </div>
+
+        <label>Dátum publikovania <span class="opt">(predvyplnené dnešným dátumom)</span></label>
+        <div class="daterow">
+          <div class="date-quick">
+            <button type="button" class="chip" data-days="0">Dnes</button>
+            <button type="button" class="chip" data-days="-1">Včera</button>
+          </div>
+          <input type="date" id="f-date">
+          <span id="date-preview" class="date-preview"></span>
+        </div>
+
+        <label>Obrázok článku <span class="opt">(nahraj fotku — nahradí farbu)</span></label>
+        <div class="imgrow">
+          <input type="file" id="f-image" accept="image/*">
+          <button type="button" class="btn sec" id="img-clear">Odstrániť</button>
+        </div>
+        <div id="img-thumb" class="img-thumb hidden"></div>
+        <div class="hint">Ak nenahráš obrázok, použije sa farba nižšie.</div>
+
+        <label>Farba <span class="opt">(záložná, ak bez obrázka)</span></label>
+        <div class="swatches" id="swatches"></div>
+
+        <label>Krátky popis <span class="opt">(teaser na karte a v náhľade)</span></label>
+        <textarea id="f-excerpt" placeholder="Jedna-dve vety, ktoré zlákajú na článok."></textarea>
+
+        <label>Úvod článku <span class="opt">(odseky oddeľ prázdnym riadkom)</span></label>
+        <textarea id="f-intro" style="min-height:120px" placeholder="Hlavný text článku…"></textarea>
+
+        <label>Citát <span class="opt">(zvýraznená veta v článku)</span></label>
+        <textarea id="f-quote" placeholder="More má tú vlastnosť, že aj keď ho poznáš, vždy ťa niečím prekvapí."></textarea>
+
+        <label>Čo sa oplatí <span class="opt">(sekcia s tipmi)</span></label>
+        <textarea id="f-worth" placeholder="Praktické tipy — skoré ráno, kde parkovať, čo nevynechať…"></textarea>
+
+        <div class="btns">
+          <button class="btn" id="save">Uložiť článok</button>
+          <button class="btn sec" id="reset">Vyčistiť</button>
+          <button class="btn sec hidden" id="cancel-edit">Zrušiť úpravu</button>
+        </div>
+        <div id="status"></div>
+      </div>
+
+      <!-- PICKER + PREVIEW -->
+      <div style="display:flex;flex-direction:column;gap:26px">
+        <div class="panel">
+          <h2>Poloha na mape <span class="mini">klikni do mapy</span></h2>
+          <div class="pickwrap">
+            <svg id="pick" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Mapa na výber polohy">
+              <g id="marker" style="display:none">
+                <circle r="12" fill="rgba(244,183,64,.35)"/>
+                <circle r="5" fill="#F4B740" stroke="#0B4D74" stroke-width="1.6"/>
+              </g>
+            </svg>
+          </div>
+          <label style="margin-top:12px">Lokalita <span class="opt">(automaticky nájde polohu na mape)</span></label>
+          <div class="locrow">
+            <input type="text" id="f-loc" placeholder="Napr. Amalfi, Taliansko">
+            <button type="button" class="btn" id="geobtn">Nájsť</button>
+          </div>
+          <input type="hidden" id="f-x"><input type="hidden" id="f-y">
+          <div class="coord" id="coord">Napíš lokalitu a klikni „Nájsť", alebo klikni priamo do mapy pre jemné doladenie.</div>
+        </div>
+
+        <div class="panel">
+          <h2>Náhľad karty</h2>
+          <div class="pv-card">
+            <div class="pv-img" id="pv-img"></div>
+            <div class="pv-body">
+              <div class="pv-place" id="pv-place">Miesto</div>
+              <h4 id="pv-title">Nadpis článku</h4>
+              <p id="pv-excerpt">Krátky popis…</p>
+              <div class="pv-date" id="pv-date">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="panel" style="margin-bottom:48px">
+      <h2>Existujúce články <span class="mini" id="count"></span></h2>
+      <div id="list-wrap">
+        <table>
+          <thead><tr><th>Nadpis</th><th>Miesto</th><th>Typ</th><th>Dátum</th><th></th></tr></thead>
+          <tbody id="list"></tbody>
+        </table>
+      </div>
+      <p id="list-empty" class="hint hidden" style="padding:8px 2px">Zatiaľ žiadne články.</p>
+    </div>
+  </div>
+</div>
+
+<script src="world-map.js"></script>
+<script src="dvaja-supabase.js"></script>
+<script>
+(function(){
+  var TOKEN_STORE='dvaja_admin_token';
+  var GR = window.GRADIENTS || [];
+  var editingId=null, token=null, currentImageUrl='', origImageUrl='';
+
+  var $=function(id){return document.getElementById(id);};
+
+  /* ---------- LOGIN ---------- */
+  function showApp(){ $('gate').classList.add('hidden'); $('app').classList.remove('hidden'); init(); }
+  token = sessionStorage.getItem(TOKEN_STORE);
+  if(token){ showApp(); }
+  $('gate-form').addEventListener('submit',function(e){
+    e.preventDefault();
+    var em=$('gate-email').value.trim(), pw=$('gate-key').value;
+    if(!em||!pw){ $('gate-err').textContent='Zadaj e-mail aj heslo.'; return; }
+    if(!(window.SB && SB.ready())){ $('gate-err').textContent='Backend nie je nastavený — doplň SB_URL a SB_KEY v dvaja-supabase.js.'; return; }
+    $('gate-err').textContent='Prihlasujem…';
+    SB.login(em,pw).then(function(res){
+      token=res.access_token; sessionStorage.setItem(TOKEN_STORE,token); $('gate-err').textContent=''; showApp();
+    }).catch(function(err){ $('gate-err').textContent=err.message||'Prihlásenie zlyhalo.'; });
+  });
+  $('logout').addEventListener('click',function(e){ e.preventDefault(); sessionStorage.removeItem(TOKEN_STORE); location.reload(); });
+
+  /* ---------- INIT ---------- */
+  var inited=false;
+  function init(){
+    if(inited) return; inited=true;
+    // map picker
+    if(window.WORLD_MAP_INNER){ $('pick').insertAdjacentHTML('afterbegin', window.WORLD_MAP_INNER); }
+    $('pick').addEventListener('click',function(e){
+      var r=this.getBoundingClientRect();
+      setXY((e.clientX-r.left)/r.width*1000, (e.clientY-r.top)/r.height*500);
+    });
+    $('f-x').addEventListener('input',function(){ setXY(parseFloat(this.value), parseFloat($('f-y').value)); });
+    $('f-y').addEventListener('input',function(){ setXY(parseFloat($('f-x').value), parseFloat(this.value)); });
+
+    // swatches
+    GR.forEach(function(g,i){
+      var d=document.createElement('div'); d.className='sw'+(i===0?' active':''); d.style.background=g; d.title='Farba '+(i+1);
+      d.addEventListener('click',function(){ setGradient(g); });
+      $('swatches').appendChild(d);
+    });
+    setGradient(GR[0]||'linear-gradient(150deg,#3FA9DB,#0B4D74)');
+
+    // auto date = dnes (lokálne) + rýchle voľby + náhľad
+    $('f-date').value = todayStr();
+    $('f-date').addEventListener('input', updateDatePreview);
+    document.querySelectorAll('.date-quick .chip').forEach(function(b){
+      b.addEventListener('click', function(){
+        var d=new Date(); d.setDate(d.getDate()+parseInt(b.getAttribute('data-days'),10));
+        $('f-date').value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        updateDatePreview(); updatePreview();
+      });
+    });
+    updateDatePreview();
+
+    // slug auto z nadpisu
+    $('f-title').addEventListener('input',function(){
+      if(!$('f-slug')._touched) $('f-slug').value=slugify(this.value);
+      updatePreview();
+    });
+    $('f-slug').addEventListener('input',function(){ this._touched=true; });
+    ['f-place','f-excerpt','f-date','f-category'].forEach(function(id){ $(id).addEventListener('input',updatePreview); });
+
+    $('save').addEventListener('click',save);
+    $('reset').addEventListener('click',function(){ resetForm(); });
+    $('cancel-edit').addEventListener('click',function(){ resetForm(); });
+
+    // obrázok + geokódovanie
+    $('f-image').addEventListener('change',onImagePick);
+    $('img-clear').addEventListener('click',clearImage);
+    $('geobtn').addEventListener('click',doGeocode);
+    $('f-loc').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); doGeocode(); } });
+
+    // backend ready?
+    if(!(window.SB && SB.ready())){
+      $('setup').classList.remove('hidden');
+      $('save').disabled=true;
+    } else {
+      loadList();
+    }
+    updatePreview();
+  }
+
+  /* ---------- helpers ---------- */
+  var curGradient=GR[0]||'linear-gradient(150deg,#3FA9DB,#0B4D74)';
+  function setGradient(g){
+    curGradient=g;
+    var sws=$('swatches').children;
+    for(var i=0;i<sws.length;i++){ sws[i].classList.toggle('active', sws[i].style.background===g || GR[i]===g); }
+    updatePreview();
+  }
+  function setXY(x,y){
+    if(isNaN(x)||isNaN(y)){ return; }
+    x=Math.max(0,Math.min(1000,Math.round(x*10)/10));
+    y=Math.max(0,Math.min(500,Math.round(y*10)/10));
+    $('f-x').value=x; $('f-y').value=y;
+    var m=$('marker'); m.setAttribute('transform','translate('+x+','+y+')'); m.style.display='';
+    $('coord').textContent='Pin: x='+x+', y='+y;
+  }
+  function slugify(s){
+    var map={'á':'a','ä':'a','č':'c','ď':'d','é':'e','í':'i','ĺ':'l','ľ':'l','ň':'n','ó':'o','ô':'o','ŕ':'r','š':'s','ť':'t','ú':'u','ý':'y','ž':'z'};
+    return String(s||'').toLowerCase().replace(/[áäčďéíĺľňóôŕšťúýž]/g,function(c){return map[c]||c;})
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);
+  }
+  function fmtD(iso){ return window.fmtDate?fmtDate(iso):(iso||''); }
+  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function updateDatePreview(){
+    var v=$('f-date').value;
+    $('date-preview').textContent = v ? ('= '+fmtD(v)) : '';
+    var t=todayStr(), yd=new Date(); yd.setDate(yd.getDate()-1);
+    var ys=yd.getFullYear()+'-'+String(yd.getMonth()+1).padStart(2,'0')+'-'+String(yd.getDate()).padStart(2,'0');
+    document.querySelectorAll('.date-quick .chip').forEach(function(b){
+      var d=b.getAttribute('data-days'); b.classList.toggle('active',(d==='0'&&v===t)||(d==='-1'&&v===ys));
+    });
+  }
+
+  /* ---------- obrázok (Supabase Storage) ---------- */
+  var BUCKET='obrazky';
+  function onImagePick(){
+    var f=$('f-image').files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)){ status('Vyber obrázok (jpg, png, webp…).',false); return; }
+    showThumb(URL.createObjectURL(f)); updatePreview();
+    status('Nahrávam obrázok…');
+    var ext=((f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,''))||'jpg';
+    var base=($('f-slug').value||slugify($('f-title').value)||'clanok');
+    var path=base+'-'+Date.now()+'.'+ext;
+    SB.upload(BUCKET,path,f,token)
+      .then(function(url){ currentImageUrl=url; showThumb(url); updatePreview(); status('Obrázok nahraný ✓',true); })
+      .catch(function(e){ handleWriteErr(e); clearImage(); });
+  }
+  function showThumb(url){ var t=$('img-thumb'); t.style.backgroundImage="url('"+url+"')"; t.classList.remove('hidden'); }
+  function clearImage(){ currentImageUrl=''; $('f-image').value=''; var t=$('img-thumb'); t.classList.add('hidden'); t.style.backgroundImage=''; updatePreview(); }
+
+  /* ---------- geokódovanie lokality -> súradnice ---------- */
+  function doGeocode(){
+    var q=$('f-loc').value.trim();
+    if(!q){ status('Napíš lokalitu (mesto, krajina…).',false); return; }
+    if(!window.geocode){ status('Geokódovanie nie je dostupné.',false); return; }
+    status('Hľadám polohu…');
+    window.geocode(q).then(function(res){
+      if(!res){ status('Poloha sa nenašla — skús presnejší názov alebo klikni do mapy.',false); return; }
+      setXY(res.x,res.y);
+      $('coord').textContent='Poloha: '+String(res.label||q).split(',').slice(0,2).join(',')+'  (x='+res.x+', y='+res.y+')';
+      status('Poloha nastavená ✓ — prípadne dolaď klikom do mapy.',true);
+    }).catch(function(e){ status('Geokódovanie zlyhalo: '+e.message,false); });
+  }
+
+  /* ---------- preview ---------- */
+  function updatePreview(){
+    $('pv-img').style.background = currentImageUrl ? ("url('"+currentImageUrl+"') center/cover no-repeat") : curGradient;
+    $('pv-place').textContent=$('f-place').value||'Miesto';
+    $('pv-title').textContent=$('f-title').value||'Nadpis článku';
+    $('pv-excerpt').textContent=$('f-excerpt').value||'Krátky popis…';
+    var d=$('f-date').value; $('pv-date').textContent=d?fmtD(d):'—';
+  }
+
+  /* ---------- gather / save ---------- */
+  function status(msg,ok){ var s=$('status'); s.textContent=msg; s.className=ok===true?'ok':(ok===false?'err':''); }
+  function gather(){
+    return {
+      title:$('f-title').value.trim(),
+      place:$('f-place').value.trim(),
+      slug:($('f-slug').value.trim()||slugify($('f-title').value)),
+      category:$('f-category').value,
+      featured:$('f-featured').checked,
+      published_at:$('f-date').value||null,
+      map_x:$('f-x').value!==''?parseFloat($('f-x').value):null,
+      map_y:$('f-y').value!==''?parseFloat($('f-y').value):null,
+      gradient:curGradient,
+      excerpt:$('f-excerpt').value.trim(),
+      intro:$('f-intro').value.trim(),
+      quote:$('f-quote').value.trim(),
+      worth_it:$('f-worth').value.trim()
+    };
+  }
+  function save(){
+    var a=gather();
+    if(!a.title){ status('Doplň nadpis.',false); return; }
+    if(!a.place){ status('Doplň miesto.',false); return; }
+    if(!a.slug){ status('Doplň slug.',false); return; }
+    if(a.map_x==null||a.map_y==null){ status('Nastav polohu — napíš lokalitu a klikni „Nájsť", alebo klikni do mapy.',false); return; }
+    if(currentImageUrl) a.image_url=currentImageUrl;
+    else if(editingId && origImageUrl) a.image_url=null;   // zmazanie obrázka pri úprave
+    if(!a.published_at) delete a.published_at;
+    $('save').disabled=true; status('Ukladám…');
+    (async function(){
+      if(a.featured){ await SB.write('PATCH','articles?featured=eq.true', token, {featured:false}); }
+      if(editingId){ await SB.write('PATCH','articles?id=eq.'+encodeURIComponent(editingId), token, a); }
+      else { await SB.write('POST','articles', token, a); }
+    })()
+      .then(function(){
+        status(editingId?'Článok upravený ✓':'Článok pridaný ✓', true);
+        resetForm(); loadList();
+      })
+      .catch(handleWriteErr);
+  }
+
+  /* ---------- list / edit / delete ---------- */
+  function loadList(){
+    SB.list().then(function(rows){
+      var tb=$('list'); tb.innerHTML='';
+      $('count').textContent='('+rows.length+')';
+      $('list-empty').classList.toggle('hidden', rows.length>0);
+      rows.forEach(function(a){
+        var tr=document.createElement('tr');
+        var cat={favorite:'★ Obľúbené',article:'📍 Článok',planned:'○ Plán'}[a.category]||a.category;
+        tr.innerHTML='<td>'+(a.featured?'<span class="star" title="Príbeh týždňa">★ </span>':'')+escapeHtml(a.title)+'</td>'+
+          '<td>'+escapeHtml(a.place||'')+'</td>'+
+          '<td><span class="pill '+a.category+'">'+cat+'</span></td>'+
+          '<td>'+fmtD(a.published_at)+'</td>'+
+          '<td style="white-space:nowrap;text-align:right"></td>';
+        var td=tr.lastChild;
+        var be=document.createElement('button'); be.className='tbtn edit'; be.textContent='Upraviť';
+        be.addEventListener('click',function(){ editRow(a); });
+        var bd=document.createElement('button'); bd.className='tbtn del'; bd.textContent='Zmazať';
+        bd.addEventListener('click',function(){ delRow(a); });
+        td.appendChild(be); td.appendChild(bd);
+        tb.appendChild(tr);
+      });
+    }).catch(function(e){ status('Zoznam sa nenačítal: '+e.message,false); });
+  }
+  function editRow(a){
+    editingId=a.id;
+    $('f-title').value=a.title||''; $('f-place').value=a.place||'';
+    $('f-slug').value=a.slug||''; $('f-slug')._touched=true;
+    $('f-category').value=a.category||'article';
+    $('f-featured').checked=!!a.featured;
+    $('f-date').value=(a.published_at||'').slice(0,10); updateDatePreview();
+    $('f-excerpt').value=a.excerpt||''; $('f-intro').value=a.intro||'';
+    $('f-quote').value=a.quote||''; $('f-worth').value=a.worth_it||'';
+    setGradient(a.gradient||GR[0]);
+    origImageUrl=a.image_url||''; currentImageUrl=origImageUrl;
+    if(currentImageUrl) showThumb(currentImageUrl); else { $('img-thumb').classList.add('hidden'); $('img-thumb').style.backgroundImage=''; }
+    $('f-image').value='';
+    if(a.map_x!=null&&a.map_y!=null) setXY(Number(a.map_x),Number(a.map_y));
+    $('form-title').textContent='Úprava článku';
+    $('edit-badge').textContent='upravuješ: '+(a.title||'');
+    $('cancel-edit').classList.remove('hidden');
+    $('save').textContent='Uložiť zmeny';
+    updatePreview();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function delRow(a){
+    if(!confirm('Naozaj zmazať článok „'+(a.title||'')+'"?')) return;
+    SB.write('DELETE','articles?id=eq.'+encodeURIComponent(a.id), token)
+      .then(function(){ status('Zmazané ✓',true); if(editingId===a.id) resetForm(); loadList(); })
+      .catch(handleWriteErr);
+  }
+  function resetForm(){
+    editingId=null;
+    ['f-title','f-place','f-slug','f-excerpt','f-intro','f-quote','f-worth'].forEach(function(id){ $(id).value=''; });
+    $('f-slug')._touched=false;
+    $('f-category').value='article'; $('f-featured').checked=false;
+    $('f-date').value=todayStr(); updateDatePreview();
+    $('f-x').value=''; $('f-y').value=''; $('marker').style.display='none'; $('coord').textContent='Napíš lokalitu a klikni „Nájsť", alebo klikni do mapy.';
+    $('f-loc').value=''; clearImage(); origImageUrl='';
+    setGradient(GR[0]||curGradient);
+    $('form-title').textContent='Nový článok'; $('edit-badge').textContent='';
+    $('cancel-edit').classList.add('hidden'); $('save').textContent='Uložiť článok'; $('save').disabled=false;
+    updatePreview();
+  }
+  function handleWriteErr(e){
+    $('save').disabled=false;
+    var m=String((e&&e.message)||e);
+    if((e&&e.status===401) || /JWT|token|expired|Unauthorized|not authorized/i.test(m)){
+      status('Prihlásenie vypršalo — prihlás sa znova.',false);
+      sessionStorage.removeItem(TOKEN_STORE); setTimeout(function(){location.reload();},1400);
+    } else if(/duplicate|unique|already exists/i.test(m)){
+      status('Slug už existuje — zvoľ iný.',false);
+    } else if((e&&e.status===403) || /row-level security|violates/i.test(m)){
+      status('Chýba oprávnenie na zápis (skontroluj RLS/prihlásenie).',false);
+    } else {
+      status('Chyba: '+m,false);
+    }
+  }
+  function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+})();
+</script>
+</body>
+</html>

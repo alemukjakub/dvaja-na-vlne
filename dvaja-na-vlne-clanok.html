@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Článok — Dvaja na vlne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#F4FAFC;--surface:#FFFFFF;--primary:#1391CE;--deep:#0B4D74;--aqua:#7FD0E8;--aqua-tint:#EAF6FB;--sun:#F4B740;--sun-ink:#8a5e00;--ink:#21414F;--muted:#5f7d8a;--line:rgba(11,77,116,.15);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Figtree',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sun-ink)}
+
+  .site-header{position:sticky;top:0;z-index:40;background:rgba(244,250,252,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:68px;max-width:1120px;margin:0 auto;padding:0 28px}
+  .logo{display:flex;align-items:center;gap:9px;font-family:'Fraunces';font-weight:600;font-size:20px;color:var(--deep)}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:15px;color:var(--muted)}
+  .nav-links a:hover{color:var(--deep)}
+  .nav-cta{background:var(--primary);color:#fff!important;padding:9px 18px;font-weight:600;font-size:14px}
+  .burger{display:none;background:none;border:0;cursor:pointer;color:var(--deep)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+  .back{display:inline-flex;align-items:center;gap:7px;margin:24px 0 4px;font-size:14px;color:var(--primary)}
+  .art-head{padding:8px 0 22px}
+  .art-head h1{font-family:'Fraunces';font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.05;letter-spacing:-.015em;color:var(--deep);margin:12px 0 14px}
+  .art-meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:14px}
+  .art-meta .dot{width:4px;height:4px;background:var(--aqua)}
+  .hero-img{height:min(46vw,420px);margin:8px 0 34px;border:1px solid var(--line)}
+  .art-body p{margin-bottom:22px}
+  .art-body p:first-of-type::first-letter{font-family:'Fraunces';font-size:56px;line-height:.8;float:left;padding:6px 10px 0 0;color:var(--primary)}
+  .art-body h2{font-family:'Fraunces';font-weight:500;font-size:26px;color:var(--deep);margin:32px 0 12px}
+  .pull{border-left:3px solid var(--sun);padding:6px 0 6px 20px;margin:28px 0;font-family:'Fraunces';font-style:italic;font-size:22px;color:var(--deep)}
+
+  .art-foot{margin:44px 0 0;padding:26px 0 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center}
+  .btn{background:var(--primary);color:#fff;padding:11px 20px;font-weight:600;font-size:15px}
+  .site-footer{border-top:1px solid var(--line);margin-top:56px;padding:38px 0}
+  .foot{max-width:1120px;margin:0 auto;padding:0 28px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot .muted{color:var(--muted);font-size:14px}
+  @media(max-width:760px){.nav-links{display:none}.burger{display:block}.nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(244,250,252,.98);border-bottom:1px solid var(--line);padding:18px 28px;gap:16px;align-items:flex-start;box-shadow:0 14px 26px -18px rgba(11,77,116,.55)}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav">
+    <a class="logo" href="dvaja-na-vlne-domov.html"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true"><path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6"/><circle cx="19" cy="3.5" r="2" fill="#F4B740"/></svg>Dvaja na vlne</a>
+    <nav class="nav-links">
+      <a href="dvaja-na-vlne-domov.html">Príbehy</a>
+      <a href="dvaja-na-vlne-mapa.html">Mapa</a>
+      <a href="dvaja-na-vlne-o-nas.html">O nás</a>
+      <a href="dvaja-na-vlne-domov.html#odber" class="nav-cta">Odoberať</a>
+    </nav>
+    <button class="burger" aria-label="Menu"><svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+</header>
+
+<article class="wrap">
+  <a class="back" href="dvaja-na-vlne-mapa.html">← Späť na mapu</a>
+  <div class="art-head">
+    <span class="eyebrow" id="place">Miesto</span>
+    <h1 id="title">Názov článku</h1>
+    <div class="art-meta"><span id="date">28. jún 2026</span><span class="dot"></span><span id="readtime">7 min čítania</span><span class="dot"></span><span>Dvaja na vlne</span></div>
+  </div>
+  <div class="hero-img" id="hero"></div>
+
+  <div class="art-body" id="art-body">
+    <p>Vydali sme sa k moru ešte pred svitaním, keď bolo pobrežie celé naše. Toto je jedno z miest, ktoré nám ostalo v hlave — a na ďalších riadkoch sa podelíme o to, čo sme videli, kde sme sa zastavili a čo by sme už neurobili inak.</p>
+    <p>Ráno bolo ešte chladné, keď sme vyšli k moru. Vzduch mal tú soľnú ostrosť, ktorá sa nedá vyfotiť, len zapamätať. Cesta viedla popri vode a s každou zákrutou sa otváral nový výhľad — presne kvôli takýmto chvíľam sme si tento denník založili.</p>
+    <div class="pull">„More má tú vlastnosť, že aj keď ho poznáš, vždy ťa niečím prekvapí."</div>
+    <h2>Čo sa oplatí</h2>
+    <p>Skoré ráno. Vážne. Kým sa zobudia autobusy a davy, patrí pobrežie len tým, čo vstali. Druhá rada: nechať si čas. Najlepšie miesta sme našli vtedy, keď sme sa niekde len tak zastavili a nikam sa neponáhľali.</p>
+    <p>Doniesli sme si domov viac fotiek než sme čakali a menej plánov než sme mali — a to je asi tá správna bilancia z každej dobrej cesty.</p>
+  </div>
+
+  <div class="art-foot">
+    <a class="back" href="dvaja-na-vlne-mapa.html">← Späť na mapu</a>
+    <a class="btn" href="dvaja-na-vlne-domov.html#z-dennika">Ďalšie príbehy</a>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="foot">
+    <a class="logo" href="dvaja-na-vlne-domov.html"><svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true"><path d="M1 8 Q4.5 4 8 8 T15 8 T21 8" stroke="#1391CE" stroke-width="1.6"/><circle cx="19" cy="3.5" r="2" fill="#F4B740"/></svg>Dvaja na vlne</a>
+    <span class="muted">© 2026 · cestovateľský denník · stále niekde pri mori</span>
+  </div>
+</footer>
+
+<script src="dvaja-supabase.js"></script>
+<script src="dvaja-nav.js"></script>
+<script>
+(function(){
+  var GR = window.GRADIENTS || [
+    'linear-gradient(150deg,#3FA9DB,#0B4D74)','linear-gradient(150deg,#7FD0E8,#1391CE)',
+    'linear-gradient(150deg,#1391CE,#0B3A5C)','linear-gradient(150deg,#5FB8DE,#0B4D74)',
+    'linear-gradient(150deg,#9BD9EC,#2E9BD6)','linear-gradient(150deg,#2E9BD6,#0B3A5C)'
+  ];
+  var q=new URLSearchParams(location.search);
+  var slug=q.get('slug'), t=q.get('t'), p=q.get('p'), c=parseInt(q.get('c')||'0',10);
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];}); }
+  function paras(txt){ return String(txt||'').split(/\n{2,}|\n/).map(function(s){return s.trim();}).filter(Boolean).map(function(s){return '<p>'+esc(s)+'</p>';}).join(''); }
+
+  function fill(a){
+    if(a.place) document.getElementById('place').textContent=a.place;
+    if(a.title){ document.getElementById('title').textContent=a.title; document.title=a.title+' — Dvaja na vlne'; }
+    var ds=(window.fmtDate?fmtDate(a.published_at):''); if(ds) document.getElementById('date').textContent=ds;
+    var rt=document.getElementById('readtime'); if(rt && window.readingMin) rt.textContent=readingMin(a)+' min čítania';
+    document.getElementById('hero').style.background=(window.bgCss?window.bgCss(a):(a.gradient||GR[(c||0)%GR.length]));
+    var body=document.getElementById('art-body');
+    if(body){
+      var html='';
+      html+=paras(a.intro);
+      if(a.quote) html+='<div class="pull">„'+esc(a.quote)+'"</div>';
+      if(a.worth_it){ html+='<h2>Čo sa oplatí</h2>'+paras(a.worth_it); }
+      if(html.replace(/\s/g,'')) body.innerHTML=html;
+    }
+  }
+
+  // 1) okamžitý režim cez query-params (spätná kompatibilita)
+  if(t){ document.getElementById('title').textContent=t; document.title=t+' — Dvaja na vlne'; }
+  if(p){ document.getElementById('place').textContent=p; }
+  document.getElementById('hero').style.background=GR[(c||0)%GR.length];
+
+  // 2) plný článok zo Supabase podľa slugu
+  if(slug && window.SB && SB.ready()){
+    SB.bySlug(slug).then(function(a){
+      if(a) fill(a); else console.warn('Dvaja: článok "'+slug+'" sa nenašiel.');
+    }).catch(function(e){ console.warn('Dvaja: načítanie článku zlyhalo.', e); });
+  }
+})();
+</script>
+</body>
+</html>
