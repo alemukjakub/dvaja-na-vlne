@@ -95,7 +95,7 @@ window.SB = {
 
 /* CSS pozadie karty/pinu/hero: ak má článok obrázok, použi ho (cover), inak gradient */
 window.bgCss = function (a) {
-  if (a && a.image_url) return "url('" + String(a.image_url).replace(/'/g, "%27") + "') center/cover no-repeat";
+  if (a && a.image_url) return "url('" + String(a.image_url).replace(/'/g, "%27").replace(/"/g, "%22") + "') center/cover no-repeat";
   return (a && a.gradient) || window.GRADIENTS[0];
 };
 
@@ -137,6 +137,7 @@ window.fmtDate = function (iso) {
 
 /* odhad času čítania */
 window.readingMin = function (a) {
+  a = a || {};
   if (a.reading_min) return a.reading_min;
   var t = ((a.intro || "") + " " + (a.worth_it || "") + " " + (a.excerpt || "")).trim();
   var words = t ? t.split(/\s+/).length : 0;

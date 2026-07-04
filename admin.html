@@ -88,6 +88,7 @@
   .pv-date{margin-top:14px;font-size:12px;color:var(--muted)}
 
   /* list */
+  #list-wrap{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:14px}
   th,td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
   th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
@@ -119,8 +120,8 @@
       Dvaja na vlne
     </div>
     <p>Prihlásenie do administrácie</p>
-    <input type="email" id="gate-email" placeholder="E-mail" autocomplete="username" style="margin-bottom:10px">
-    <input type="password" id="gate-key" placeholder="Heslo" autocomplete="current-password">
+    <input type="email" id="gate-email" placeholder="E-mail" aria-label="E-mail" autocomplete="username" style="margin-bottom:10px">
+    <input type="password" id="gate-key" placeholder="Heslo" aria-label="Heslo" autocomplete="current-password">
     <button class="btn" type="submit" style="width:100%">Vstúpiť</button>
     <div id="gate-err" style="color:#b42318;font-size:13px;margin-top:10px"></div>
   </form>
@@ -223,7 +224,7 @@
           <button class="btn sec" id="reset">Vyčistiť</button>
           <button class="btn sec hidden" id="cancel-edit">Zrušiť úpravu</button>
         </div>
-        <div id="status"></div>
+        <div id="status" role="status" aria-live="polite"></div>
       </div>
 
       <!-- PICKER + PREVIEW -->
@@ -282,7 +283,7 @@
 (function(){
   var TOKEN_STORE='dvaja_admin_token';
   var GR = window.GRADIENTS || [];
-  var editingId=null, token=null, currentImageUrl='', origImageUrl='';
+  var editingId=null, token=null, currentImageUrl='', origImageUrl='', lastObjUrl=null;
 
   var $=function(id){return document.getElementById(id);};
 
@@ -312,8 +313,7 @@
       var r=this.getBoundingClientRect();
       setXY((e.clientX-r.left)/r.width*1000, (e.clientY-r.top)/r.height*500);
     });
-    $('f-x').addEventListener('input',function(){ setXY(parseFloat(this.value), parseFloat($('f-y').value)); });
-    $('f-y').addEventListener('input',function(){ setXY(parseFloat($('f-x').value), parseFloat(this.value)); });
+    // súradnice sa nastavujú cez „Nájsť" (geokódovanie) alebo klikom do mapy
 
     // swatches
     GR.forEach(function(g,i){
@@ -360,6 +360,13 @@
     } else {
       loadList();
     }
+    // prístupnosť: prepoj <label> s príslušným vstupom (for/id)
+    document.querySelectorAll('.panel label').forEach(function(l){
+      if(l.htmlFor || l.classList.contains('check') || !l.textContent.trim()) return;
+      var c=l.nextElementSibling; if(!c) return;
+      var t=/^(INPUT|SELECT|TEXTAREA)$/.test(c.tagName) ? c : (c.querySelector ? c.querySelector('input,select,textarea') : null);
+      if(t && t.id) l.htmlFor=t.id;
+    });
     updatePreview();
   }
 
@@ -401,17 +408,26 @@
   function onImagePick(){
     var f=$('f-image').files[0]; if(!f) return;
     if(!/^image\//.test(f.type)){ status('Vyber obrázok (jpg, png, webp…).',false); return; }
-    showThumb(URL.createObjectURL(f)); updatePreview();
+    var prev=currentImageUrl;
+    if(lastObjUrl){ URL.revokeObjectURL(lastObjUrl); }
+    lastObjUrl=URL.createObjectURL(f);
+    showThumb(lastObjUrl); updatePreview();
     status('Nahrávam obrázok…');
     var ext=((f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,''))||'jpg';
     var base=($('f-slug').value||slugify($('f-title').value)||'clanok');
     var path=base+'-'+Date.now()+'.'+ext;
     SB.upload(BUCKET,path,f,token)
       .then(function(url){ currentImageUrl=url; showThumb(url); updatePreview(); status('Obrázok nahraný ✓',true); })
-      .catch(function(e){ handleWriteErr(e); clearImage(); });
+      .catch(function(e){
+        handleWriteErr(e);
+        // obnov predchádzajúci stav — nezmaž existujúci obrázok pri neúspešnom uploade
+        currentImageUrl=prev; $('f-image').value='';
+        if(prev){ showThumb(prev); } else { var t=$('img-thumb'); t.classList.add('hidden'); t.style.backgroundImage=''; }
+        updatePreview();
+      });
   }
   function showThumb(url){ var t=$('img-thumb'); t.style.backgroundImage="url('"+url+"')"; t.classList.remove('hidden'); }
-  function clearImage(){ currentImageUrl=''; $('f-image').value=''; var t=$('img-thumb'); t.classList.add('hidden'); t.style.backgroundImage=''; updatePreview(); }
+  function clearImage(){ currentImageUrl=''; $('f-image').value=''; if(lastObjUrl){ URL.revokeObjectURL(lastObjUrl); lastObjUrl=null; } var t=$('img-thumb'); t.classList.add('hidden'); t.style.backgroundImage=''; updatePreview(); }
 
   /* ---------- geokódovanie lokality -> súradnice ---------- */
   function doGeocode(){
@@ -538,7 +554,7 @@
     $('f-loc').value=''; clearImage(); origImageUrl='';
     setGradient(GR[0]||curGradient);
     $('form-title').textContent='Nový článok'; $('edit-badge').textContent='';
-    $('cancel-edit').classList.add('hidden'); $('save').textContent='Uložiť článok'; $('save').disabled=false;
+    $('cancel-edit').classList.add('hidden'); $('save').textContent='Uložiť článok'; $('save').disabled=!(window.SB && SB.ready());
     updatePreview();
   }
   function handleWriteErr(e){

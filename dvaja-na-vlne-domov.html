@@ -73,7 +73,7 @@
   .g6{background:linear-gradient(150deg,#2E9BD6,#0B3A5C)}
   .card-body{padding:20px 21px 24px;flex:1;display:flex;flex-direction:column}
   .card-body .place{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);margin-bottom:9px}
-  .card-body h4{font-family:'Fraunces';font-weight:500;font-size:21px;line-height:1.15;color:var(--deep);margin-bottom:9px}
+  .card-body h3{font-family:'Fraunces';font-weight:500;font-size:21px;line-height:1.15;color:var(--deep);margin-bottom:9px}
   .card-body p{color:var(--muted);font-size:15px;flex:1}
   .card-date{margin-top:16px;font-size:13px;color:var(--muted)}
 
@@ -193,27 +193,27 @@
     <div class="grid">
       <article class="card reveal">
         <div class="card-img g1"></div>
-        <div class="card-body"><span class="place">Santorini · Grécko</span><h4>Modré kupoly a kde ich fotiť bez davov</h4><p>Tri miesta, kam sa dostaneš pešo skôr ako výletné lode.</p><span class="card-date">21. jún 2026</span></div>
+        <div class="card-body"><span class="place">Santorini · Grécko</span><h3>Modré kupoly a kde ich fotiť bez davov</h3><p>Tri miesta, kam sa dostaneš pešo skôr ako výletné lode.</p><span class="card-date">21. jún 2026</span></div>
       </article>
       <article class="card reveal">
         <div class="card-img g2"></div>
-        <div class="card-body"><span class="place">Algarve · Portugalsko</span><h4>Skryté pláže pod útesmi Lagosu</h4><p>Kajakom do jaskýň Benagil a späť pred prílivom.</p><span class="card-date">12. jún 2026</span></div>
+        <div class="card-body"><span class="place">Algarve · Portugalsko</span><h3>Skryté pláže pod útesmi Lagosu</h3><p>Kajakom do jaskýň Benagil a späť pred prílivom.</p><span class="card-date">12. jún 2026</span></div>
       </article>
       <article class="card reveal">
         <div class="card-img g3"></div>
-        <div class="card-body"><span class="place">Lofoty · Nórsko</span><h4>More, ktoré nikdy nezotmie</h4><p>Polnočné slnko nad rybárskymi domčekmi v Reine.</p><span class="card-date">3. jún 2026</span></div>
+        <div class="card-body"><span class="place">Lofoty · Nórsko</span><h3>More, ktoré nikdy nezotmie</h3><p>Polnočné slnko nad rybárskymi domčekmi v Reine.</p><span class="card-date">3. jún 2026</span></div>
       </article>
       <article class="card reveal">
         <div class="card-img g4"></div>
-        <div class="card-body"><span class="place">Dubrovník · Chorvátsko</span><h4>Po hradbách o šiestej ráno</h4><p>Ako obísť vstupenkové rady a mať mesto pre seba.</p><span class="card-date">25. máj 2026</span></div>
+        <div class="card-body"><span class="place">Dubrovník · Chorvátsko</span><h3>Po hradbách o šiestej ráno</h3><p>Ako obísť vstupenkové rady a mať mesto pre seba.</p><span class="card-date">25. máj 2026</span></div>
       </article>
       <article class="card reveal">
         <div class="card-img g5"></div>
-        <div class="card-body"><span class="place">Madeira · Portugalsko</span><h4>Levady, oceán a mračná pod nohami</h4><p>Túra, kde sa Atlantik díva na teba zhora aj zdola.</p><span class="card-date">14. máj 2026</span></div>
+        <div class="card-body"><span class="place">Madeira · Portugalsko</span><h3>Levady, oceán a mračná pod nohami</h3><p>Túra, kde sa Atlantik díva na teba zhora aj zdola.</p><span class="card-date">14. máj 2026</span></div>
       </article>
       <article class="card reveal">
         <div class="card-img g6"></div>
-        <div class="card-body"><span class="place">Mallorca · Španielsko</span><h4>Zátoky na severe, ktoré nikto neobjavil</h4><p>Autom po serpentínach k tyrkysovým calas.</p><span class="card-date">2. máj 2026</span></div>
+        <div class="card-body"><span class="place">Mallorca · Španielsko</span><h3>Zátoky na severe, ktoré nikto neobjavil</h3><p>Autom po serpentínach k tyrkysovým calas.</p><span class="card-date">2. máj 2026</span></div>
       </article>
     </div>
   </div>
@@ -291,7 +291,7 @@
   function cardHTML(a){
     return '<article class="card reveal" data-slug="'+esc(a.slug)+'">'+
       '<div class="card-img" style="background:'+window.bgCss(a)+'"></div>'+
-      '<div class="card-body"><span class="place">'+esc(a.place)+'</span><h4>'+esc(a.title)+'</h4>'+
+      '<div class="card-body"><span class="place">'+esc(a.place)+'</span><h3>'+esc(a.title)+'</h3>'+
       '<p>'+esc(a.excerpt||'')+'</p><span class="card-date">'+esc(fmtDate(a.published_at))+'</span></div></article>';
   }
   function renderData(list){
@@ -313,6 +313,21 @@
   if(window.SB && SB.ready()){
     SB.list().then(renderData).catch(function(e){ console.warn('Dvaja: Supabase načítanie zlyhalo, ponechávam vstavaný obsah.', e); });
   }
+
+  // ---- odber newslettera (uloží e-mail do Supabase ak je tabuľka; vždy poďakuje) ----
+  (function(){
+    var f=document.querySelector('.sub-form'); if(!f) return;
+    var inp=f.querySelector('input'), btn=f.querySelector('button');
+    function thanks(){ f.innerHTML='<p style="color:var(--deep);font-weight:600;margin:0">Ďakujeme! Ozveme sa, keď priplávame s novým príbehom. 🌊</p>'; }
+    btn.addEventListener('click',function(){
+      var e=(inp.value||'').trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){ inp.focus(); inp.style.borderColor='#b42318'; return; }
+      inp.style.borderColor='';
+      if(window.SB && SB.ready()){
+        fetch(SB_URL+'/rest/v1/subscribers',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({email:e})}).then(thanks,thanks);
+      } else { thanks(); }
+    });
+  })();
 })();
 </script>
 </body>

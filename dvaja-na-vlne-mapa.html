@@ -26,16 +26,11 @@
   .burger{display:none;background:none;border:0;cursor:pointer;color:var(--deep)}
   a:focus-visible,button:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
   .pin:focus-visible{outline:none}
+  .pin:focus-visible .halo{fill:var(--sun);opacity:.5}
 
   .intro{padding:48px 0 22px;text-align:center}
   .intro h1{font-family:'Fraunces';font-weight:500;font-size:clamp(32px,5vw,50px);line-height:1.02;letter-spacing:-.015em;color:var(--deep);margin:12px auto 12px;max-width:22ch}
   .intro p{max-width:60ch;margin:0 auto;color:var(--muted);font-size:18px}
-  .legend{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin:22px 0 4px}
-  .lg{display:flex;align-items:center;gap:9px;font-size:15px}
-  .lg .m{width:22px;display:flex;justify-content:center}
-  .lg-star{color:var(--sun);font-size:17px;text-shadow:0 0 1px var(--deep)}
-  .lg-pin{color:var(--primary);font-size:17px}
-  .lg-ring{width:14px;height:14px;border-radius:50%;border:1.8px dashed var(--deep);background:var(--bg)}
 
   .map-outer{margin:18px auto 8px;max-width:1240px}
   .map-layout{display:grid;grid-template-columns:230px minmax(0,1fr) 230px;gap:22px;align-items:start}
@@ -140,9 +135,9 @@
   <aside class="map-side">
     <div class="fgroup">
       <div class="fh">Legenda</div>
-      <label class="chk" style="cursor:default"><span class="cx star">★</span> Obľúbené miesta</label>
-      <label class="chk" style="cursor:default"><span class="cx pin">📍</span> Máme článok</label>
-      <label class="chk" style="cursor:default"><span class="cx ring"></span> Chystáme sa</label>
+      <div class="chk" style="cursor:default"><span class="cx star">★</span> Obľúbené miesta</div>
+      <div class="chk" style="cursor:default"><span class="cx pin">📍</span> Máme článok</div>
+      <div class="chk" style="cursor:default"><span class="cx ring"></span> Chystáme sa</div>
     </div>
   </aside>
   <div class="map-canvas" id="map-canvas">
@@ -225,7 +220,7 @@ var labelLayer=document.getElementById('labels');
 var pop=document.getElementById('popup');
 var W=D.W,H=D.H;
 var scale=1,tx=0,ty=0,active=-1,anim=null;
-var REGION=5.2, MAXS=9, MINS=1;
+var MAXS=9, MINS=1;
 var catLabel={favorite:'Obľúbené miesto',article:'Máme článok',planned:'Chystáme sa'};
 
 function cssK(){return canvas.clientWidth/W;}
@@ -377,9 +372,9 @@ function zoomAt(sx,sy,f){
 svg.addEventListener('wheel',function(e){e.preventDefault();var r=canvas.getBoundingClientRect();var step=Math.exp(-e.deltaY*0.0016);step=Math.max(0.9,Math.min(1.11,step));zoomAt(e.clientX-r.left,e.clientY-r.top,step);},{passive:false});
 
 // drag pan
-var dragging=false,moved=false,lx=0,ly=0;
-svg.addEventListener('pointerdown',function(e){ if(e.target.closest('.pin'))return; dragging=true;moved=false;lx=e.clientX;ly=e.clientY; setActiveCont(''); try{svg.setPointerCapture(e.pointerId);}catch(_){} });
-svg.addEventListener('pointermove',function(e){ if(!dragging)return; if(anim){cancelAnimationFrame(anim);anim=null;} var k=cssK(); tx+=(e.clientX-lx)/k; ty+=(e.clientY-ly)/k; if(Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly)>3)moved=true; lx=e.clientX;ly=e.clientY; clampPan(); apply(); });
+var dragging=false,lx=0,ly=0;
+svg.addEventListener('pointerdown',function(e){ if(e.target.closest('.pin'))return; dragging=true;lx=e.clientX;ly=e.clientY; setActiveCont(''); try{svg.setPointerCapture(e.pointerId);}catch(_){} });
+svg.addEventListener('pointermove',function(e){ if(!dragging)return; if(anim){cancelAnimationFrame(anim);anim=null;} var k=cssK(); tx+=(e.clientX-lx)/k; ty+=(e.clientY-ly)/k; lx=e.clientX;ly=e.clientY; clampPan(); apply(); });
 svg.addEventListener('pointerup',function(e){ if(!dragging)return; dragging=false; });
 
 // keep popup open while hovering it; hide when leaving
@@ -416,6 +411,7 @@ if(window.SB && SB.ready()){
     if(!rows || !rows.length) return;
     D.pts = rows.map(window.toPin);
     buildPins();
+    applyCatFilter();
     buildPlannedList();
     active=-1; markActive(); pop.style.display='none';
     apply();
