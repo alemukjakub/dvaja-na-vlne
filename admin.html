@@ -49,14 +49,34 @@
   .sw.active{border-color:var(--deep)}
   .imgrow,.locrow{display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap}
   .locrow input{flex:1;min-width:180px}
+  .geo-results{display:none;margin-top:8px;border:1px solid var(--line);background:#fff;max-height:230px;overflow-y:auto}
+  .geo-item{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 12px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink)}
+  .geo-item:last-child{border-bottom:0}
+  .geo-item:hover{background:var(--aqua-tint)}
+  .geo-name{color:var(--deep)}
+  .geo-type{color:var(--muted);font-size:11px;white-space:nowrap;align-self:center}
   .img-thumb{margin-top:10px;height:130px;background-size:cover;background-position:center;border:1px solid var(--line)}
   .daterow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px}
   .date-quick{display:flex;gap:6px}
   .chip{font-family:inherit;font-size:13px;background:var(--bg);border:1px solid var(--line);color:var(--deep);padding:9px 13px;cursor:pointer;transition:all .15s}
   .chip:hover{border-color:var(--primary)}
   .chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-  #f-date{max-width:190px}
-  .date-preview{color:var(--primary);font-weight:600;font-size:13px}
+  .date-field{position:relative}
+  .date-trigger{font-family:inherit;font-size:14px;background:#fff;border:1px solid var(--line);color:var(--deep);padding:10px 14px;cursor:pointer;min-width:170px;text-align:left}
+  .date-trigger:hover{border-color:var(--primary)}
+  .date-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;background:#fff;border:1px solid var(--line);box-shadow:0 16px 40px -18px rgba(11,77,116,.55);padding:12px;width:252px}
+  .date-pop[hidden]{display:none}
+  .dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .dp-title{font-family:'Fraunces';font-weight:600;color:var(--deep);font-size:15px;text-transform:capitalize}
+  .dp-nav{background:var(--bg);border:1px solid var(--line);color:var(--deep);width:30px;height:30px;cursor:pointer;font-size:16px;line-height:1}
+  .dp-nav:hover{border-color:var(--primary)}
+  .dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+  .dp-wd{font-size:11px;color:var(--muted);text-align:center;padding:4px 0;font-weight:600}
+  .dp-empty{height:32px}
+  .dp-day{height:32px;background:none;border:0;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink)}
+  .dp-day:hover{background:var(--aqua-tint)}
+  .dp-day.today{outline:1px solid var(--aqua);outline-offset:-1px}
+  .dp-day.sel{background:var(--primary);color:#fff}
 
   .btns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
   .btn{background:var(--primary);color:#fff;border:0;padding:11px 20px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;transition:background .2s}
@@ -192,8 +212,18 @@
             <button type="button" class="chip" data-days="0">Dnes</button>
             <button type="button" class="chip" data-days="-1">Včera</button>
           </div>
-          <input type="date" id="f-date">
-          <span id="date-preview" class="date-preview"></span>
+          <div class="date-field">
+            <button type="button" id="date-trigger" class="date-trigger" aria-haspopup="dialog" aria-expanded="false">Vyber dátum</button>
+            <div id="date-pop" class="date-pop" role="dialog" aria-label="Výber dátumu" hidden>
+              <div class="dp-head">
+                <button type="button" class="dp-nav" id="dp-prev" aria-label="Predchádzajúci mesiac">‹</button>
+                <span id="dp-title" class="dp-title"></span>
+                <button type="button" class="dp-nav" id="dp-next" aria-label="Nasledujúci mesiac">›</button>
+              </div>
+              <div class="dp-grid" id="dp-grid"></div>
+            </div>
+          </div>
+          <input type="hidden" id="f-date">
         </div>
 
         <label>Obrázok článku <span class="opt">(nahraj fotku — nahradí farbu)</span></label>
@@ -239,13 +269,14 @@
               </g>
             </svg>
           </div>
-          <label style="margin-top:12px">Lokalita <span class="opt">(automaticky nájde polohu na mape)</span></label>
+          <label style="margin-top:12px">Miesto <span class="opt">(názov, alebo súradnice / odkaz z Google Máp)</span></label>
           <div class="locrow">
-            <input type="text" id="f-loc" placeholder="Napr. Amalfi, Taliansko">
+            <input type="text" id="f-loc" placeholder="Napr. Death Valley, USA — alebo 36.5, -117.0">
             <button type="button" class="btn" id="geobtn">Nájsť</button>
           </div>
           <input type="hidden" id="f-x"><input type="hidden" id="f-y">
-          <div class="coord" id="coord">Napíš lokalitu a klikni „Nájsť", alebo klikni priamo do mapy pre jemné doladenie.</div>
+          <div class="coord" id="coord">Zadaj miesto a klikni „Nájsť" (vyber zo zoznamu), alebo vlož súradnice / odkaz z Google Máp. Klikom do mapy dolaď.</div>
+          <div id="geo-results" class="geo-results"></div>
         </div>
 
         <div class="panel">
@@ -335,6 +366,13 @@
     });
     updateDatePreview();
 
+    // vlastný kalendár
+    $('date-trigger').addEventListener('click',function(e){ e.stopPropagation(); if($('date-pop').hidden) openDatePop(); else closeDatePop(); });
+    $('dp-prev').addEventListener('click',function(){ dpView.setMonth(dpView.getMonth()-1); renderDp(); });
+    $('dp-next').addEventListener('click',function(){ dpView.setMonth(dpView.getMonth()+1); renderDp(); });
+    $('date-pop').addEventListener('click',function(e){ e.stopPropagation(); });
+    document.addEventListener('click',function(){ var p=$('date-pop'); if(p && !p.hidden) closeDatePop(); });
+
     // slug auto z nadpisu
     $('f-title').addEventListener('input',function(){
       if(!$('f-slug')._touched) $('f-slug').value=slugify(this.value);
@@ -395,12 +433,43 @@
   function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
   function updateDatePreview(){
     var v=$('f-date').value;
-    $('date-preview').textContent = v ? ('= '+fmtD(v)) : '';
+    var trg=$('date-trigger'); if(trg) trg.textContent = v ? fmtD(v) : 'Vyber dátum';
     var t=todayStr(), yd=new Date(); yd.setDate(yd.getDate()-1);
     var ys=yd.getFullYear()+'-'+String(yd.getMonth()+1).padStart(2,'0')+'-'+String(yd.getDate()).padStart(2,'0');
     document.querySelectorAll('.date-quick .chip').forEach(function(b){
       var d=b.getAttribute('data-days'); b.classList.toggle('active',(d==='0'&&v===t)||(d==='-1'&&v===ys));
     });
+  }
+
+  /* ---------- vlastný kalendár (namiesto natívneho date inputu) ---------- */
+  var DP_M=['január','február','marec','apríl','máj','jún','júl','august','september','október','november','december'];
+  var DP_WD=['Po','Ut','St','Št','Pi','So','Ne'];
+  var dpView=null;
+  function dpPad(n){ return String(n).padStart(2,'0'); }
+  function dpIso(y,m,d){ return y+'-'+dpPad(m+1)+'-'+dpPad(d); }
+  function dpParse(s){ var m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/); return m?{y:+m[1],m:+m[2]-1}:null; }
+  function openDatePop(){
+    var p=dpParse($('f-date').value), now=new Date();
+    dpView=new Date(p?p.y:now.getFullYear(), p?p.m:now.getMonth(), 1);
+    renderDp(); $('date-pop').hidden=false; $('date-trigger').setAttribute('aria-expanded','true');
+  }
+  function closeDatePop(){ var el=$('date-pop'); if(el) el.hidden=true; var t=$('date-trigger'); if(t) t.setAttribute('aria-expanded','false'); }
+  function renderDp(){
+    $('dp-title').textContent=DP_M[dpView.getMonth()]+' '+dpView.getFullYear();
+    var grid=$('dp-grid'); grid.innerHTML='';
+    DP_WD.forEach(function(w){ var e=document.createElement('span'); e.className='dp-wd'; e.textContent=w; grid.appendChild(e); });
+    var y=dpView.getFullYear(), mo=dpView.getMonth();
+    var startDow=(new Date(y,mo,1).getDay()+6)%7, days=new Date(y,mo+1,0).getDate();
+    for(var i=0;i<startDow;i++){ var sp=document.createElement('span'); sp.className='dp-empty'; grid.appendChild(sp); }
+    var sel=$('f-date').value, today=todayStr();
+    for(var d=1;d<=days;d++){
+      (function(iso,dd){
+        var btn=document.createElement('button'); btn.type='button'; btn.className='dp-day'; btn.textContent=dd;
+        if(iso===sel) btn.classList.add('sel'); if(iso===today) btn.classList.add('today');
+        btn.addEventListener('click',function(){ $('f-date').value=iso; closeDatePop(); updateDatePreview(); updatePreview(); });
+        grid.appendChild(btn);
+      })(dpIso(y,mo,d), d);
+    }
   }
 
   /* ---------- obrázok (Supabase Storage) ---------- */
@@ -432,16 +501,41 @@
   /* ---------- geokódovanie lokality -> súradnice ---------- */
   function doGeocode(){
     var q=$('f-loc').value.trim();
-    if(!q){ status('Napíš lokalitu (mesto, krajina…).',false); return; }
-    if(!window.geocode){ status('Geokódovanie nie je dostupné.',false); return; }
-    status('Hľadám polohu…');
-    window.geocode(q).then(function(res){
-      if(!res){ status('Poloha sa nenašla — skús presnejší názov alebo klikni do mapy.',false); return; }
-      setXY(res.x,res.y);
-      $('coord').textContent='Poloha: '+String(res.label||q).split(',').slice(0,2).join(',')+'  (x='+res.x+', y='+res.y+')';
-      status('Poloha nastavená ✓ — prípadne dolaď klikom do mapy.',true);
+    if(!q){ status('Zadaj miesto alebo vlož súradnice.',false); return; }
+    clearGeoResults();
+    // 1) priamo zadané súradnice alebo odkaz z Google Máp
+    var ll=window.parseLatLng?window.parseLatLng(q):null;
+    if(ll){
+      var m=window.lonLatToMap(ll.lon,ll.lat); setXY(m.x,m.y);
+      $('coord').textContent='Poloha zo súradníc: '+ll.lat.toFixed(4)+', '+ll.lon.toFixed(4)+'  (x='+m.x+', y='+m.y+')';
+      status('Poloha nastavená zo súradníc ✓',true); return;
+    }
+    // 2) nájdi miesta a nechaj používateľa vybrať (rieši nejednoznačnosť názvov)
+    if(!window.geocodeCandidates){ status('Geokódovanie nie je dostupné.',false); return; }
+    status('Hľadám miesta…');
+    window.geocodeCandidates(q).then(function(list){
+      if(!list.length){ status('Nič sa nenašlo — skús presnejšie (napr. „Death Valley, USA") alebo vlož súradnice z Google Máp.',false); return; }
+      if(list.length===1){ pickCandidate(list[0]); return; }
+      showGeoResults(list); status('Našiel som viac miest — vyber to správne 👇',true);
     }).catch(function(e){ status('Geokódovanie zlyhalo: '+e.message,false); });
   }
+  function pickCandidate(it){
+    setXY(it.x,it.y); clearGeoResults();
+    $('coord').textContent='Poloha: '+String(it.label).split(',').slice(0,2).join(',')+'  (x='+it.x+', y='+it.y+')';
+    status('Poloha nastavená ✓ — dolaď klikom do mapy.',true);
+  }
+  function showGeoResults(list){
+    var c=$('geo-results'); c.innerHTML='';
+    list.forEach(function(it){
+      var b=document.createElement('button'); b.type='button'; b.className='geo-item';
+      var name=String(it.label).split(',').slice(0,3).join(', ');
+      b.innerHTML='<span class="geo-name">'+escapeHtml(name)+'</span><span class="geo-type">'+escapeHtml(it.type||'')+'</span>';
+      b.addEventListener('click',function(){ pickCandidate(it); });
+      c.appendChild(b);
+    });
+    c.style.display='block';
+  }
+  function clearGeoResults(){ var c=$('geo-results'); if(c){ c.innerHTML=''; c.style.display='none'; } }
 
   /* ---------- preview ---------- */
   function updatePreview(){
@@ -550,8 +644,8 @@
     $('f-slug')._touched=false;
     $('f-category').value='article'; $('f-featured').checked=false;
     $('f-date').value=todayStr(); updateDatePreview();
-    $('f-x').value=''; $('f-y').value=''; $('marker').style.display='none'; $('coord').textContent='Napíš lokalitu a klikni „Nájsť", alebo klikni do mapy.';
-    $('f-loc').value=''; clearImage(); origImageUrl='';
+    $('f-x').value=''; $('f-y').value=''; $('marker').style.display='none'; $('coord').textContent='Zadaj miesto a klikni „Nájsť", alebo vlož súradnice / odkaz z Google Máp. Klikom do mapy dolaď.';
+    $('f-loc').value=''; clearGeoResults(); clearImage(); origImageUrl='';
     setGradient(GR[0]||curGradient);
     $('form-title').textContent='Nový článok'; $('edit-badge').textContent='';
     $('cancel-edit').classList.add('hidden'); $('save').textContent='Uložiť článok'; $('save').disabled=!(window.SB && SB.ready());

@@ -164,3 +164,31 @@ window.geocode = async function (query) {
   var m = window.lonLatToMap(lon, lat);
   return { x: m.x, y: m.y, lon: lon, lat: lat, label: a[0].display_name };
 };
+
+/* Rozpozná zadané súradnice alebo odkaz z Google Máp -> {lat, lon} (inak null). */
+window.parseLatLng = function (s) {
+  s = String(s || "").trim();
+  var m = s.match(/^(-?\d{1,2}(?:\.\d+)?)\s*[,;]\s*(-?\d{1,3}(?:\.\d+)?)$/);   // "36.5, -117.0"
+  if (m) { var la = +m[1], lo = +m[2]; if (la >= -90 && la <= 90 && lo >= -180 && lo <= 180) return { lat: la, lon: lo }; }
+  m = s.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);            // google maps .../@lat,lng,...
+  if (m) return { lat: +m[1], lon: +m[2] };
+  m = s.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);         // !3dlat!4dlng
+  if (m) return { lat: +m[1], lon: +m[2] };
+  m = s.match(/[?&](?:q|query|ll|daddr)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  if (m) return { lat: +m[1], lon: +m[2] };
+  return null;
+};
+
+/* Viac kandidátov z Nominatim (zoradené podľa relevancie) -> [{label,type,lon,lat,x,y}]. */
+window.geocodeCandidates = async function (query) {
+  var url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&accept-language=sk&q=" + encodeURIComponent(query);
+  var r = await fetch(url, { headers: { "Accept": "application/json" } });
+  if (!r.ok) throw new Error("Geokódovanie zlyhalo (" + r.status + ")");
+  var a = await r.json();
+  if (!Array.isArray(a)) return [];
+  a.sort(function (p, q2) { return (parseFloat(q2.importance) || 0) - (parseFloat(p.importance) || 0); });
+  return a.map(function (it) {
+    var lon = parseFloat(it.lon), lat = parseFloat(it.lat), m = window.lonLatToMap(lon, lat);
+    return { label: it.display_name || query, type: (it.type || it.category || it.addresstype || ""), lon: lon, lat: lat, x: m.x, y: m.y };
+  });
+};
